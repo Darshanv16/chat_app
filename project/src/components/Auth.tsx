@@ -10,6 +10,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -34,10 +35,43 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
               id: authData.user.id,
               email,
               display_name: displayName,
+              phone_number: phoneNumber || null,
               status: 'online',
             });
 
           if (profileError) throw profileError;
+
+          if (phoneNumber) {
+            const { data: pendingInvites } = await supabase
+              .from('invites')
+              .select('*')
+              .eq('phone_number', phoneNumber)
+              .eq('status', 'pending');
+
+            if (pendingInvites && pendingInvites.length > 0) {
+              for (const invite of pendingInvites) {
+                await supabase.from('contacts').insert([
+                  {
+                    user_id: authData.user.id,
+                    contact_id: invite.inviter_id,
+                  },
+                  {
+                    user_id: invite.inviter_id,
+                    contact_id: authData.user.id,
+                  },
+                ]);
+
+                await supabase
+                  .from('invites')
+                  .update({
+                    status: 'accepted',
+                    accepted_at: new Date().toISOString(),
+                    accepted_by: authData.user.id,
+                  })
+                  .eq('id', invite.id);
+              }
+            }
+          }
         }
 
         onAuthSuccess();
@@ -77,19 +111,36 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
 
         <form onSubmit={handleAuth} className="space-y-4">
           {isSignUp && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Display Name
-              </label>
-              <input
-                type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                placeholder="Enter your name"
-                required
-              />
-            </div>
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Display Name
+                </label>
+                <input
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  placeholder="Enter your name"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Phone Number (Optional)
+                </label>
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  placeholder="+1234567890"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Add your phone to connect with contacts who invite you
+                </p>
+              </div>
+            </>
           )}
 
           <div>

@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { MessageSquare, Users, UserPlus, LogOut, Settings } from 'lucide-react';
+import { MessageSquare, Users, UserPlus, LogOut, Share2 } from 'lucide-react';
 import { supabase, type Profile, type ConversationWithDetails } from '../lib/supabase';
 import ConversationList from './ConversationList';
 import ChatWindow from './ChatWindow';
 import ContactsModal from './ContactsModal';
 import NewChatModal from './NewChatModal';
+import InviteModal from './InviteModal';
 
 type ChatInterfaceProps = {
   user: Profile;
@@ -16,6 +17,7 @@ export default function ChatInterface({ user, onSignOut }: ChatInterfaceProps) {
   const [selectedConversation, setSelectedConversation] = useState<ConversationWithDetails | null>(null);
   const [showContacts, setShowContacts] = useState(false);
   const [showNewChat, setShowNewChat] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -182,10 +184,10 @@ export default function ChatInterface({ user, onSignOut }: ChatInterfaceProps) {
           <div className="flex space-x-2">
             <button
               onClick={() => setShowNewChat(true)}
-              className="flex-1 bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition flex items-center justify-center space-x-2"
+              className="flex-1 bg-white text-blue-600 px-3 py-2 rounded-lg font-medium hover:bg-blue-50 transition flex items-center justify-center space-x-2"
             >
               <MessageSquare className="w-4 h-4" />
-              <span>New Chat</span>
+              <span>New</span>
             </button>
             <button
               onClick={() => setShowContacts(true)}
@@ -193,6 +195,13 @@ export default function ChatInterface({ user, onSignOut }: ChatInterfaceProps) {
               title="Contacts"
             >
               <UserPlus className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setShowInvite(true)}
+              className="bg-white text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition"
+              title="Invite"
+            >
+              <Share2 className="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -240,6 +249,13 @@ export default function ChatInterface({ user, onSignOut }: ChatInterfaceProps) {
           currentUser={user}
           onClose={() => setShowNewChat(false)}
           onConversationCreated={handleConversationCreated}
+        />
+      )}
+
+      {showInvite && (
+        <InviteModal
+          currentUser={user}
+          onClose={() => setShowInvite(false)}
         />
       )}
     </div>

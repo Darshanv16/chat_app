@@ -11,8 +11,22 @@ export type Profile = {
   display_name: string;
   avatar_url?: string;
   status: string;
+  phone_number?: string;
+  invite_code: string;
   created_at: string;
   updated_at: string;
+};
+
+export type Invite = {
+  id: string;
+  inviter_id: string;
+  phone_number?: string;
+  email?: string;
+  invite_code: string;
+  status: 'pending' | 'accepted' | 'expired';
+  created_at: string;
+  accepted_at?: string;
+  accepted_by?: string;
 };
 
 export type Contact = {
