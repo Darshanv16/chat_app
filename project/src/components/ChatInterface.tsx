@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { MessageSquare, Users, UserPlus, LogOut, Share2 } from 'lucide-react';
-import { supabase, type Profile, type ConversationWithDetails } from '../lib/supabase';
+import { MessageSquare, Users, UserPlus, LogOut, Share2, Palette } from 'lucide-react';
+import { supabase, type Profile, type ConversationWithDetails, type Theme } from '../lib/supabase';
 import ConversationList from './ConversationList';
 import ChatWindow from './ChatWindow';
 import ContactsModal from './ContactsModal';
 import NewChatModal from './NewChatModal';
 import InviteModal from './InviteModal';
+import ThemeModal from './ThemeModal';
+import { useTheme } from '../contexts/ThemeContext';
 
 type ChatInterfaceProps = {
   user: Profile;
@@ -13,12 +15,21 @@ type ChatInterfaceProps = {
 };
 
 export default function ChatInterface({ user, onSignOut }: ChatInterfaceProps) {
+  const { themeConfig, setTheme } = useTheme();
+  const [currentUser, setCurrentUser] = useState<Profile>(user);
   const [conversations, setConversations] = useState<ConversationWithDetails[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<ConversationWithDetails | null>(null);
   const [showContacts, setShowContacts] = useState(false);
   const [showNewChat, setShowNewChat] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
+  const [showTheme, setShowTheme] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user.theme) {
+      setTheme(user.theme);
+    }
+  }, [user.theme, setTheme]);
 
   useEffect(() => {
     loadConversations();
@@ -158,47 +169,60 @@ export default function ChatInterface({ user, onSignOut }: ChatInterfaceProps) {
     }
   };
 
+  const handleThemeChange = (newTheme: Theme) => {
+    setCurrentUser({ ...currentUser, theme: newTheme });
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-        <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-cyan-600">
+        <div className={`p-4 border-b border-gray-200 bg-gradient-to-r ${themeConfig.primary} ${themeConfig.primaryHover}`}>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full bg-white text-blue-600 flex items-center justify-center font-semibold">
+              <div className={`w-10 h-10 rounded-full bg-white ${themeConfig.text} flex items-center justify-center font-semibold`}>
                 {user.display_name.charAt(0).toUpperCase()}
               </div>
               <div className="text-white">
                 <div className="font-semibold">{user.display_name}</div>
-                <div className="text-xs text-blue-100">Online</div>
+                <div className="text-xs opacity-90">Online</div>
               </div>
             </div>
-            <button
-              onClick={handleSignOut}
-              className="p-2 hover:bg-blue-700 rounded-lg transition text-white"
-              title="Sign Out"
-            >
-              <LogOut className="w-5 h-5" />
-            </button>
+            <div className="flex space-x-1">
+              <button
+                onClick={() => setShowTheme(true)}
+                className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition text-white"
+                title="Change Theme"
+              >
+                <Palette className="w-5 h-5" />
+              </button>
+              <button
+                onClick={handleSignOut}
+                className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition text-white"
+                title="Sign Out"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           <div className="flex space-x-2">
             <button
               onClick={() => setShowNewChat(true)}
-              className="flex-1 bg-white text-blue-600 px-3 py-2 rounded-lg font-medium hover:bg-blue-50 transition flex items-center justify-center space-x-2"
+              className={`flex-1 bg-white ${themeConfig.text} px-3 py-2 rounded-lg font-medium hover:bg-opacity-90 transition flex items-center justify-center space-x-2`}
             >
               <MessageSquare className="w-4 h-4" />
               <span>New</span>
             </button>
             <button
               onClick={() => setShowContacts(true)}
-              className="bg-white text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition"
+              className={`bg-white ${themeConfig.text} p-2 rounded-lg hover:bg-opacity-90 transition`}
               title="Contacts"
             >
               <UserPlus className="w-5 h-5" />
             </button>
             <button
               onClick={() => setShowInvite(true)}
-              className="bg-white text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition"
+              className={`bg-white ${themeConfig.text} p-2 rounded-lg hover:bg-opacity-90 transition`}
               title="Invite"
             >
               <Share2 className="w-5 h-5" />
@@ -256,6 +280,14 @@ export default function ChatInterface({ user, onSignOut }: ChatInterfaceProps) {
         <InviteModal
           currentUser={user}
           onClose={() => setShowInvite(false)}
+        />
+      )}
+
+      {showTheme && (
+        <ThemeModal
+          currentUser={currentUser}
+          onClose={() => setShowTheme(false)}
+          onThemeChange={handleThemeChange}
         />
       )}
     </div>

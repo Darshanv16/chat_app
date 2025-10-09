@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Users as UsersIcon, User, Plus, Trash2 } from 'lucide-react';
 import { supabase, type Profile, type Contact } from '../lib/supabase';
+import { useTheme } from '../contexts/ThemeContext';
 
 type NewChatModalProps = {
   currentUser: Profile;
@@ -17,6 +18,7 @@ export default function NewChatModal({
   onClose,
   onConversationCreated,
 }: NewChatModalProps) {
+  const { themeConfig } = useTheme();
   const [chatType, setChatType] = useState<'private' | 'group'>('private');
   const [contacts, setContacts] = useState<ContactWithProfile[]>([]);
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
@@ -181,7 +183,7 @@ export default function NewChatModal({
               onClick={() => setChatType('private')}
               className={`flex-1 py-2 px-4 rounded-lg font-medium transition flex items-center justify-center space-x-2 ${
                 chatType === 'private'
-                  ? 'bg-blue-600 text-white'
+                  ? '${themeConfig.primary} text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -192,7 +194,7 @@ export default function NewChatModal({
               onClick={() => setChatType('group')}
               className={`flex-1 py-2 px-4 rounded-lg font-medium transition flex items-center justify-center space-x-2 ${
                 chatType === 'group'
-                  ? 'bg-blue-600 text-white'
+                  ? '${themeConfig.primary} text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -209,7 +211,7 @@ export default function NewChatModal({
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
               placeholder="Group name"
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:${themeConfig.ring} focus:border-transparent outline-none"
             />
             {selectedContacts.length > 0 && (
               <div className="mt-3">
@@ -259,7 +261,7 @@ export default function NewChatModal({
                   </div>
                   {chatType === 'group' &&
                     selectedContacts.includes(contact.contact_id) && (
-                      <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center">
+                      <div className="w-6 h-6 rounded-full ${themeConfig.primary} flex items-center justify-center">
                         <svg
                           className="w-4 h-4 text-white"
                           fill="none"
@@ -286,7 +288,7 @@ export default function NewChatModal({
             <button
               onClick={handleCreateGroupChat}
               disabled={loading || !groupName.trim()}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full ${themeConfig.primary} text-white py-3 rounded-lg font-medium ${themeConfig.primaryHover} transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Creating...' : 'Create Group Chat'}
             </button>

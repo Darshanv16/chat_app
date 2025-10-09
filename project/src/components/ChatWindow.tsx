@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Send, Users, Info } from 'lucide-react';
 import { supabase, type ConversationWithDetails, type Profile, type Message } from '../lib/supabase';
+import { useTheme } from '../contexts/ThemeContext';
 
 type ChatWindowProps = {
   conversation: ConversationWithDetails;
@@ -13,6 +14,7 @@ export default function ChatWindow({
   currentUser,
   onConversationUpdate,
 }: ChatWindowProps) {
+  const { themeConfig } = useTheme();
   const [messages, setMessages] = useState<(Message & { sender: Profile })[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
@@ -176,7 +178,7 @@ export default function ChatWindow({
                   <div
                     className={`px-4 py-2 rounded-2xl ${
                       isOwn
-                        ? 'bg-blue-600 text-white'
+                        ? '${themeConfig.primary} text-white'
                         : 'bg-white text-gray-800 border border-gray-200'
                     }`}
                   >
@@ -200,13 +202,13 @@ export default function ChatWindow({
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1 px-4 py-3 rounded-full border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            className="flex-1 px-4 py-3 rounded-full border border-gray-300 focus:ring-2 focus:${themeConfig.ring} focus:border-transparent outline-none"
             disabled={sending}
           />
           <button
             type="submit"
             disabled={!newMessage.trim() || sending}
-            className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="${themeConfig.primary} text-white p-3 rounded-full ${themeConfig.primaryHover} transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Send className="w-5 h-5" />
           </button>

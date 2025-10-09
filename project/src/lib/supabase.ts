@@ -5,6 +5,8 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+export type Theme = 'blue' | 'purple' | 'green' | 'orange' | 'pink' | 'red' | 'teal' | 'gray';
+
 export type Profile = {
   id: string;
   email: string;
@@ -13,6 +15,7 @@ export type Profile = {
   status: string;
   phone_number?: string;
   invite_code: string;
+  theme: Theme;
   created_at: string;
   updated_at: string;
 };

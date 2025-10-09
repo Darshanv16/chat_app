@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, UserPlus, Trash2, Search } from 'lucide-react';
 import { supabase, type Profile, type Contact } from '../lib/supabase';
+import { useTheme } from '../contexts/ThemeContext';
 
 type ContactsModalProps = {
   currentUser: Profile;
@@ -12,6 +13,7 @@ type ContactWithProfile = Contact & {
 };
 
 export default function ContactsModal({ currentUser, onClose }: ContactsModalProps) {
+  const { themeConfig } = useTheme();
   const [contacts, setContacts] = useState<ContactWithProfile[]>([]);
   const [allUsers, setAllUsers] = useState<Profile[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -124,7 +126,7 @@ export default function ContactsModal({ currentUser, onClose }: ContactsModalPro
         <div className="p-4 border-b border-gray-200">
           <button
             onClick={() => setShowAddContact(!showAddContact)}
-            className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition flex items-center justify-center space-x-2"
+            className={`w-full ${themeConfig.primary} text-white px-4 py-2 rounded-lg font-medium ${themeConfig.primaryHover} transition flex items-center justify-center space-x-2`}
           >
             <UserPlus className="w-4 h-4" />
             <span>Add New Contact</span>
@@ -140,7 +142,7 @@ export default function ContactsModal({ currentUser, onClose }: ContactsModalPro
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by name, email, or phone..."
-                className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                className={`w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 ${themeConfig.ring} focus:border-transparent outline-none`}
               />
             </div>
 
@@ -170,7 +172,7 @@ export default function ContactsModal({ currentUser, onClose }: ContactsModalPro
                       </div>
                       <button
                         onClick={() => handleAddContact(user.id)}
-                        className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                        className={`p-2 ${themeConfig.primary} text-white rounded-lg ${themeConfig.primaryHover} transition`}
                       >
                         <UserPlus className="w-4 h-4" />
                       </button>

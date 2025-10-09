@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
+import PhoneInput from './PhoneInput';
+import { useTheme } from '../contexts/ThemeContext';
 
 type AuthProps = {
   onAuthSuccess: () => void;
 };
 
 export default function Auth({ onAuthSuccess }: AuthProps) {
+  const { themeConfig } = useTheme();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -98,7 +101,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center p-4">
+    <div className={`min-h-screen bg-gradient-to-br ${themeConfig.gradient} flex items-center justify-center p-4`}>
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
@@ -120,7 +123,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
                   type="text"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  className={`w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 ${themeConfig.ring} focus:border-transparent outline-none transition`}
                   placeholder="Enter your name"
                   required
                 />
@@ -129,12 +132,10 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Phone Number (Optional)
                 </label>
-                <input
-                  type="tel"
+                <PhoneInput
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  placeholder="+1234567890"
+                  onChange={setPhoneNumber}
+                  placeholder="1234567890"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   Add your phone to connect with contacts who invite you
@@ -151,7 +152,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+              className={`w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 ${themeConfig.ring} focus:border-transparent outline-none transition`}
               placeholder="Enter your email"
               required
             />
@@ -165,7 +166,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+              className={`w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 ${themeConfig.ring} focus:border-transparent outline-none transition`}
               placeholder="Enter your password"
               required
               minLength={6}
@@ -181,7 +182,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`w-full ${themeConfig.primary} text-white py-3 rounded-lg font-medium ${themeConfig.primaryHover} transition disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             {loading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
           </button>
@@ -190,7 +191,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
         <div className="mt-6 text-center">
           <button
             onClick={() => setIsSignUp(!isSignUp)}
-            className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            className={`${themeConfig.text} hover:opacity-80 text-sm font-medium`}
           >
             {isSignUp
               ? 'Already have an account? Sign In'
